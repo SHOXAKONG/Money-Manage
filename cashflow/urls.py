@@ -6,6 +6,7 @@ from . import views
 router = DefaultRouter()
 router.register('cashflow', views.CashFlowRecordViewSet, basename='cashflow')
 router.register('status', views.StatusViewSet, basename='status')
+router.register('stats', views.FilteredStatsViewSet, basename='filtered-stats')
 
 urlpatterns = [
     path('', include(router.urls))

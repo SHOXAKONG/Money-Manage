@@ -29,6 +29,7 @@ class CashFlowRecordSerializer(serializers.ModelSerializer):
     )
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     date = serializers.DateTimeField(required=False)
+
     class Meta:
         model = CashFlow
         fields = ['id', 'user', 'date', 'status', 'status_id', 'subcategory', 'subcategory_id',
@@ -40,3 +41,9 @@ class CashFlowRecordSerializer(serializers.ModelSerializer):
         if data['subcategory'].category != data['category']:
             raise serializers.ValidationError("Subcategory does not belong to the selected category.")
         return data
+
+
+
+class StatsSerializer(serializers.Serializer):
+    label = serializers.CharField(source='category__name')  # category__name dan label sifatida foydalanamiz
+    total_sum = serializers.DecimalField(max_digits=20, decimal_places=2)
