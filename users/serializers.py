@@ -19,10 +19,18 @@ class LoginSerializer(serializers.Serializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    password_confirm = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'first_name', 'last_name']
+        fields = ['email', 'password', 'first_name', 'last_name', 'password_confirm']
+
+    def validate(self, data):
+        if data['password'] != data['password_confirm']:
+            raise serializers.ValidationError(
+                {"password": "Passwords do not match."}
+            )
+        return data
 
     def create(self, validated_data):
         user = User.objects.create_user(
@@ -33,36 +41,3 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
-
-class ForgotPasswordSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-
-    def validate_email(self, value):
-        if not User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("No user with this email exists.")
-        return value
-
-
-class RestorePasswordSerializer(serializers.Serializer):
-    uid = serializers.CharField()
-    token = serializers.CharField()
-    new_password = serializers.CharField(write_only=True)
-
-    def validate(self, data):
-        try:
-            uid = force_str(urlsafe_base64_decode(data['uid']))
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            raise serializers.ValidationError("Invalid UID")
-
-        token_generator = PasswordResetTokenGenerator()
-        if not token_generator.check_token(user, data['token']):
-            raise serializers.ValidationError("Invalid or expired token")
-
-        return data
-
-    def save(self):
-        uid = force_str(urlsafe_base64_decode(self.validated_data['uid']))
-        user = User.objects.get(pk=uid)
-        user.set_password(self.validated_data['new_password'])
-        user.save()

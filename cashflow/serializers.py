@@ -28,7 +28,7 @@ class CashFlowRecordSerializer(serializers.ModelSerializer):
         queryset=Type.objects.all(), source='type', write_only=True
     )
     user = serializers.PrimaryKeyRelatedField(read_only=True)
-
+    date = serializers.DateTimeField(required=False)
     class Meta:
         model = CashFlow
         fields = ['id', 'user', 'date', 'status', 'status_id', 'subcategory', 'subcategory_id',

@@ -6,9 +6,14 @@ from cashflow.serializers import StatusSerializer, CashFlowRecordSerializer
 
 
 class StatusViewSet(viewsets.ModelViewSet):
-    queryset = Status.objects.all()
     serializer_class = StatusSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Status.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class CashFlowRecordViewSet(viewsets.ModelViewSet):

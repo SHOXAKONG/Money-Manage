@@ -8,7 +8,7 @@ from .status import Status
 
 class CashFlow(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cashflow')
-    date = models.DateTimeField(default=now)
+    date = models.DateTimeField(default=now, null=True, blank=True)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
