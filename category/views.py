@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from .models import Category, Subcategory, Type
 from .serializers import SubcategorySerializer, CategorySerializer, TypeSerializer
@@ -17,6 +18,8 @@ class UserOwnedModelViewSet(viewsets.ModelViewSet):
 class TypeViewSet(UserOwnedModelViewSet):
     queryset = Type.objects.all()
     serializer_class = TypeSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['name']
 
 
 class CategoryViewSet(UserOwnedModelViewSet):
